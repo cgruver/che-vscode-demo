@@ -54,6 +54,11 @@ components:
       path: /var/lib/pgsql/data
 - name: oc-cli
   container:
+    args:
+      - '-f'
+      - /dev/null
+    command:
+      - tail
     image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
     sourceMapping: /projects
     mountSources: true
