@@ -39,4 +39,4 @@ nb-configuration.xml
 # Local environment
 .env
 
-quarkus-tools/tools/
+images/tools/

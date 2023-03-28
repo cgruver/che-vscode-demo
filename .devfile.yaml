@@ -6,7 +6,7 @@ metadata:
 components:
 - name: dev-tools
   container: 
-    image: quay.io/cgruver0/che/quarkus:latest
+    image: quay.io/cgruver0/che/vscode-demo:latest
     memoryRequest: 1Gi
     memoryLimit: 6Gi
     cpuRequest: 500m
@@ -52,6 +52,12 @@ components:
     volumeMounts:
     - name: pgdata
       path: /var/lib/pgsql/data
+- name: oc-cli
+  container:
+    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+    sourceMapping: /projects
+    mountSources: true
+    memoryLimit: 64M
 - volume:
     size: 4Gi
   name: projects
@@ -97,7 +103,7 @@ commands:
   id: start-native
 - exec:
     commandLine: "POD=$(oc get pod --selector controller.devfile.io/devworkspace_name=che-test-workspace -o name) ; oc rsh -c quarkus-native-runner ${POD}"
-    component: dev-tools
+    component: oc-cli
     group:
       kind: run
     label: Terminal - Quarkus Native UBI
@@ -105,12 +111,20 @@ commands:
   id: ubi-shell
 - exec:
     commandLine: "POD=$(oc get pod --selector controller.devfile.io/devworkspace_name=che-test-workspace -o name) ; oc rsh -c postgres ${POD}"
-    component: dev-tools
+    component: oc-cli
     group:
       kind: run
     label: Terminal - PostgreSQL
     workingDir: '${PROJECT_SOURCE}'
   id: postgres-shell
+- exec:
+    commandLine: "POD=$(oc get pod --selector controller.devfile.io/devworkspace_name=che-test-workspace -o name) ; oc rsh -c oc-cli ${POD}"
+    component: oc-cli
+    group:
+      kind: run
+    label: Terminal - OC CLI
+    workingDir: '${PROJECT_SOURCE}'
+  id: oc-shell
 - exec:
     commandLine: "kubedock server --port-forward"
     component: dev-tools
