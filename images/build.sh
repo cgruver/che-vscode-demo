@@ -4,6 +4,7 @@ MAVEN_VERSION=${MAVEN_VERSION:=3.8.8}
 QUARKUS_VERSION=${QUARKUS_VERSION:=2.16.1.Final}
 MANDREL_VERSION=${MANDREL_VERSION:=22.3.0.1-Final}
 KUBEDOCK_VERSION=${KUBEDOCK_VERSION:=0.9.2}
+DOCKER_VERSION=${DOCKER_VERSION:=20.10.8}
 TOOLS_IMAGE_PATH=${TOOLS_IMAGE_PATH:=quay.io/cgruver0/che/quarkus-tools}
 TOOLS_IMAGE_TAG=${TOOLS_IMAGE_TAG:=latest}
 DEMO_IMAGE_PATH=${DEMO_IMAGE_PATH:=quay.io/cgruver0/che/vscode-demo}
@@ -56,6 +57,13 @@ TEMP_DIR="$(mktemp -d)"
   chmod +x ${TOOLS_DIR}/bin/kubedock 
 rm -rf "${TEMP_DIR}"
 
+## Install Docker CLI
+TEMP_DIR="$(mktemp -d)"
+curl -fsSL -o ${TEMP_DIR}/docker.tgz https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz
+tar -xzf ${TEMP_DIR}/docker.tgz -C ${TEMP_DIR}
+cp ${TEMP_DIR}/docker/docker ${TOOLS_DIR}/bin
+rm -rf "${TEMP_DIR}"
+
 ## Create Symbolic Links to executables
 cd ${TOOLS_DIR}/bin
 ln -s ../quarkus-cli/bin/quarkus quarkus
@@ -64,5 +72,6 @@ cd -
 
 podman build -t ${TOOLS_IMAGE_PATH}:${TOOLS_IMAGE_TAG} -f quarkus-tools.Dockerfile .
 podman push ${TOOLS_IMAGE_PATH}:${TOOLS_IMAGE_TAG}
+
 podman build -t ${DEMO_IMAGE_PATH}:${DEMO_IMAGE_TAG} -f vscode-demo.Dockerfile .
 podman push ${DEMO_IMAGE_PATH}:${DEMO_IMAGE_TAG}
