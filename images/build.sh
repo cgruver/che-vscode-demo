@@ -31,7 +31,7 @@ rm -rf "${TEMP_DIR}"
 
 ## Install YQ
 TEMP_DIR="$(mktemp -d)" 
-  YQ_VER="$(basename $(curl -Ls -o /dev/null -w %{url_effective} https://github.com/mikefarah/yq/releases/latest))" 
+  YQ_VER=$(basename $(curl -Ls -o /dev/null -w %{url_effective} https://github.com/mikefarah/yq/releases/latest))
   curl -fsSL -o ${TEMP_DIR}/yq.tar.gz https://github.com/mikefarah/yq/releases/download/${YQ_VER}/yq_linux_amd64.tar.gz 
   tar -xzf ${TEMP_DIR}/yq.tar.gz -C ${TEMP_DIR} 
   cp ${TEMP_DIR}/yq_linux_amd64 ${TOOLS_DIR}/bin/yq 
@@ -70,8 +70,8 @@ ln -s ../quarkus-cli/bin/quarkus quarkus
 ln -s ../maven/bin/mvn mvn
 cd -
 
-podman build -t ${TOOLS_IMAGE_PATH}:${TOOLS_IMAGE_TAG} -f quarkus-tools.Dockerfile .
+podman build -t ${TOOLS_IMAGE_PATH}:${TOOLS_IMAGE_TAG} -f quarkus-tools.Containerfile .
 podman push ${TOOLS_IMAGE_PATH}:${TOOLS_IMAGE_TAG}
 
-podman build -t ${DEMO_IMAGE_PATH}:${DEMO_IMAGE_TAG} -f vscode-demo.Dockerfile .
+podman build -t ${DEMO_IMAGE_PATH}:${DEMO_IMAGE_TAG} -f vscode-demo.Containerfile .
 podman push ${DEMO_IMAGE_PATH}:${DEMO_IMAGE_TAG}
